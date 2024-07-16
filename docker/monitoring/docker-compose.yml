@@ -22,18 +22,18 @@ services:
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
   node-exporter:
-    image: quay.io/prometheus/node-exporter:latest
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-      - /:/host:ro,rslave
-    command: 
-      - '--path.rootfs=/host'
-      - '--path.procfs=/host/proc' 
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
-      - --collector.filesystem.ignored-mount-points
-      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
       - 9100:9100
 volumes:
